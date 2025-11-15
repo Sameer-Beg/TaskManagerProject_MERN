@@ -1,16 +1,15 @@
 import { json } from "express"
 import User from "../models/user.model.js"
 import bcryptjs from "bcryptjs"
+import { errorHAndler } from "../utils/error.js"
 
 // Signup controller function
-export const signup = async(req , res )=> {
+export const signup = async(req , res , next )=> {
        // Extracting required fields from request body
     const {name , email , password , profileImgUrl , adminJoinCode} = req.body
      // Validate required fields
     if(!name || !email || !password || name === "" || email==="" || password===""){
-        return res.status(400).json({
-            message:"All fields are required"
-        })
+        return next(errorHAndler(400 , "All fields are required "))
     }
     // Check if the user already exists based on emailxts
     const isAllreadyExists = await User.findOne({
@@ -18,10 +17,7 @@ export const signup = async(req , res )=> {
     })
         // If user exists, return error
     if(isAllreadyExists){
-        return res.status(400).json({
-            success:false,
-            message:"User already exixtes "
-        })
+        return next(errorHAndler(400 , " user already exixts "))
     }
       // Default role set to 'user'
     let role = "user"
@@ -43,9 +39,7 @@ export const signup = async(req , res )=> {
         await newUser.save();
         res.json("SignUp successfully")
     } catch (error) {
-        res.status(500).json({
-            message:error.message()
-        })
+        next(error.message)
     }
     
 }
