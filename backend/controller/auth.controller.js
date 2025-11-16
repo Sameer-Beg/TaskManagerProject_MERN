@@ -102,8 +102,25 @@ export const updateUserProfile = async(req , res , next )=>{
         const updateduser = await user.save()
         const {password: pass, ...rest} = user._doc
         res.status(200).json(rest)
-        
+
     } catch (error) {
         next(error)
+    }
+}
+
+
+
+export const uploadImage = async(req , res , next)=>{
+    try {
+        if(!req.file){
+            return next(errorHAndler(400 , "No file uploaded"))
+        }
+        const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`
+        res.status(200).json({
+            imageUrl
+        })
+    } catch (error) {
+        next(error)
+        
     }
 }
