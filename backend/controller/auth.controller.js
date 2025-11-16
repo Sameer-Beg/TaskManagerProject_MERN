@@ -65,7 +65,7 @@ export const signin = async(req, res ,  next)=>{
             return next(errorHAndler(400 , "wrong credentials"))
         }
         //token create
-        const token = jwt.sign({id:validUser._id} ,  process.env.JWT_SEDRET)
+        const token = jwt.sign({id:validUser._id , role: validUser.role} ,  process.env.JWT_SEDRET)
         const {password: pass , ...rest} = validUser._doc
         res.status(200).cookie("access_token" , token, {httpOnly:true}).json(rest) 
     } catch (error) {

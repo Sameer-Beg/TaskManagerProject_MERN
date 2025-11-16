@@ -4,7 +4,7 @@ import dotenv from "dotenv"
 import mongoose from "mongoose"
 import authRoutes from "./routes/auth.route.js"
 import cookieParser from "cookie-parser"
-
+import userRoutes from "./routes/user.route.js"
 dotenv.config(); //  .env config 
 
 // db connected 
@@ -36,7 +36,7 @@ app.listen(3000 , ()=>{
 
 
 app.use("/api/auth"  ,authRoutes)
-
+app.use("/api/users" , userRoutes)
 
 
 // error handler
