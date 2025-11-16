@@ -73,7 +73,7 @@ export const signin = async(req, res ,  next)=>{
     }
 }
 
-
+//user profile
 export const userProfile  = async(req, res , next)=>{
     try {
         const user = await User.findById(req.user.id)
@@ -84,5 +84,26 @@ export const userProfile  = async(req, res , next)=>{
         res.status(200).json(rest)
     } catch (error) {
        next(error) 
+    }
+}
+
+//updateUserProfile
+export const updateUserProfile = async(req , res , next )=>{
+    try {
+        const user = await User.findById(req.user.id)
+        if(!user){
+            return next(errorHAndler(404 , "User not found"))
+        }
+        user.name = req.body.name || user.name
+        user.email = req.body.email || user.email
+        if(req.body.password){
+            user.password = bcryptjs.hashSync(req.body.password , 10)
+        }
+        const updateduser = await user.save()
+        const {password: pass, ...rest} = user._doc
+        res.status(200).json(rest)
+        
+    } catch (error) {
+        next(error)
     }
 }
