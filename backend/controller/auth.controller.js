@@ -2,6 +2,9 @@ import { json } from "express"
 import User from "../models/user.model.js"
 import bcryptjs from "bcryptjs"
 import { errorHAndler } from "../utils/error.js"
+import jwt from "jsonwebtoken"
+
+
 
 // Signup controller function
 export const signup = async(req , res , next )=> {
@@ -42,4 +45,30 @@ export const signup = async(req , res , next )=> {
         next(error.message)
     }
     
+}
+
+
+//signin
+export const signin = async(req, res ,  next)=>{
+    try {
+        const {email , password} = req.body
+        if(!email || !password || email==="" || password===""){
+            return next(errorHAndler(400 , "All fields are required"))
+        }
+        const validUser = await User.findOne({email})
+        if(!validUser){
+            return next(errorHAndler(404 , "User not found"))
+        }
+        // compare password using bcrypt js 
+        const validpassword = bcryptjs.compareSync(password , validUser.password)
+        if(!validpassword){
+            return next(errorHAndler(400 , "wrong credentials"))
+        }
+        //token create
+        const token = jwt.sign({id:validUser._id} ,  process.env.JWT_SEDRET)
+        const {password: pass , ...rest} = validUser._doc
+        res.status(200).cookie("access_token" , token, {httpOnly:true}).json(rest) 
+    } catch (error) {
+        next(error)
+    }
 }
